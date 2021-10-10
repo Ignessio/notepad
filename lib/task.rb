@@ -24,5 +24,4 @@ class Task < Post
 
     [time_string, deadline, @text]
   end
-  end
 end
