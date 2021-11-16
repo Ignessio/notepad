@@ -1,15 +1,13 @@
+# encoding: utf-8
+#
+# Класс «Заметка», разновидность базового класса «Запись»
 class Memo < Post
-  def initialize
-    super
-  end
+  def read_from_console
+    puts 'Новая заметка (все, что пишите до строчки "end"):'
 
-  def read_from_colsole
-    puts "Новая заметка (все, что пишите до строчки \"конец\"):"
-
-    @text = []
     line = nil
 
-    while line != "конец" do
+    until line == 'end'
       line = STDIN.gets.chomp
       @text << line
     end
@@ -18,8 +16,28 @@ class Memo < Post
   end
 
   def to_strings
-    time_string = "Создано: #{@created_at.strftime("%Y.%m.%d, %H:%M:%S")}\n\r \n\r"
+    time_string = "Создано: #{@created_at.strftime('%Y.%m.%d, %H:%M:%S')}\n"
 
     @text.unshift(time_string)
+  end
+
+  # Метод to_db_hash у Заметки добавляет один ключ в хэш
+  def to_db_hash
+    # Вызываем родительский метод to_db_hash ключевым словом super. К хэшу,
+    # который он вернул добавляем специфичные для этого класса поля методом
+    # Hash#merge. Массив строк делаем одной большой строкой, разделенной
+    # символами перевода строки.
+    super.merge('text' => @text.join('\n'))
+  end
+
+  # Метод load_data у Заметки считывает дополнительно text заметки
+  def load_data(data_hash)
+    # Сперва дергаем родительский метод load_data для общих полей. Обратите
+    # внимание, что вызов без параметров тут эквивалентен super(data_hash), так
+    # как те же параметры будут переданы методу super автоматически.
+    super(data_hash)
+
+    # Теперь достаем из хэша специфичное только для задачи значение text
+    @text = data_hash['text'].split('\n')
   end
 end
